@@ -6,18 +6,16 @@ import google.protobuf.duration_pb2 as duration_pb2
 from google.cloud import bigquery
 from google.protobuf.timestamp_pb2 import Timestamp
 from google.cloud.optimization_v1.types import TimeWindow, Shipment
-from dotenv import load_dotenv
 import os
+import json
 
 app = Flask(__name__)
 
-load_dotenv()  # .envファイルから環境変数を読み込む
-
-# サービスアカウントJSONファイルへのパスを環境変数から取得
-SERVICE_ACCOUNT_FILE = os.getenv('GOOGLE_APPLICATION_CREDENTIALS')
+# シークレットからサービスアカウント情報を取得
+service_account_info = json.loads(os.getenv('GOOGLE_APPLICATION_CREDENTIALS_JSON'))
 
 # 認証情報を作成
-credentials = service_account.Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE)
+credentials = service_account.Credentials.from_service_account_info(service_account_info)
 
 # Route Optimization APIクライアントを作成
 client = ro.RouteOptimizationClient(credentials=credentials)
@@ -49,9 +47,7 @@ def getDriverInfo():
 def makeVisit(defalutDuration):
     project_id = "m2m-core"
 
-    credentials_bq = service_account.Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE)
-
-    client_bq = bigquery.Client(project=project_id, credentials=credentials_bq)
+    client_bq = bigquery.Client(credentials=credentials, project=project_id)
 
     query = """
          select    mmm_cleaning.id,
