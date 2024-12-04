@@ -17,8 +17,7 @@ load_dotenv()  # .envファイルから環境変数を読み込む
 SERVICE_ACCOUNT_FILE = os.getenv('GOOGLE_APPLICATION_CREDENTIALS')
 
 # 認証情報を作成
-credentials = service_account.Cred
-entials.from_service_account_file(SERVICE_ACCOUNT_FILE)
+credentials = service_account.Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE)
 
 # Route Optimization APIクライアントを作成
 client = ro.RouteOptimizationClient(credentials=credentials)
@@ -48,7 +47,7 @@ def getDriverInfo():
     return driver_list_data
 
 def makeVisit(defalutDuration):
-    project_id = "your_project_id"
+    project_id = "m2m-core"
 
     credentials_bq = service_account.Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE)
 
@@ -225,4 +224,4 @@ def optimize_routes_endpoint():
         return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, host='0.0.0.0', port=3000)
